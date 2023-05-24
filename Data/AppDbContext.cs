@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using logTesting.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace logTesting.Data
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : IdentityDbContext
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
@@ -20,6 +21,7 @@ namespace logTesting.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
             //modelBuilder.Entity<Article>().HasOne(a => a.Author).WithMany(a => a.Articles).HasForeignKey(a => a.AuthorId);
             //modelBuilder.Entity<Article>().HasOne(a => a.Category).WithMany(a => a.Articles).HasForeignKey(a => a.CategoryId);
             modelBuilder.Entity<Author>().HasMany(a => a.Articles).WithOne(a => a.Author).HasForeignKey(a => a.AuthorId);
