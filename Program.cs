@@ -3,6 +3,7 @@ using logTesting.Configs;
 using logTesting.Data;
 using logTesting.Repo;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
@@ -43,6 +44,9 @@ builder.Services.AddAuthentication(options =>
         ValidateLifetime = true
     };
 });
+
+builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddEntityFrameworkStores<AppDbContext>();
 
 builder.Services.AddScoped<IAuthorRepo, AuthorRepo>();
 builder.Services.AddScoped<IArticleRepo, ArticleRepo>();
