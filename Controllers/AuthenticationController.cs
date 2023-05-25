@@ -9,6 +9,7 @@ using logTesting.Configs;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using logTesting.Dtos;
 
 namespace logTesting.Controllers
 {
@@ -29,7 +30,7 @@ namespace logTesting.Controllers
 
         [HttpPost]
         [Route("register")]
-        public async Task<IActionResult> Register([FromBody] Dtos.UserRegistrationRequestDto user)
+        public async Task<IActionResult> Register([FromBody] UserRegistrationRequestDto user)
         {
             if (ModelState.IsValid)
             {
@@ -87,6 +88,60 @@ namespace logTesting.Controllers
             }
         }
  
+        [HttpPost]
+        [Route("login")]
+        public async Task<IActionResult> Login([FromBody] UserLoginRequestDto user)
+        {
+            if (ModelState.IsValid)
+            {
+                var existingUser = await _userManager.FindByEmailAsync(user.Email);
+                //Check if email exists
+                if (existingUser == null)
+                {
+                    return BadRequest(new Models.AuthResult
+                    {
+                        Errors = new List<string>()
+                        {
+                            "Invalid login request"
+                        },
+                        Result = false
+                    });
+                }
+
+                //Check if password is correct
+                var isCorrect = await _userManager.CheckPasswordAsync(existingUser, user.Password);
+                if (!isCorrect)
+                {
+                    return BadRequest(new Models.AuthResult
+                    {
+                        Errors = new List<string>()
+                        {
+                            "Invalid login request"
+                        },
+                        Result = false
+                    });
+                }
+
+                var jwtToken = GenerateJwtToken(existingUser);
+                return Ok(new Models.AuthResult
+                {
+                    Errors = null,
+                    Result = true,
+                    Token = jwtToken
+                });
+            }
+            else
+            {
+                return BadRequest(new Models.AuthResult
+                {
+                    Errors = new List<string>()
+                    {
+                        "Invalid payload"
+                    },
+                    Result = false
+                });
+            }
+        }
         private string GenerateJwtToken(IdentityUser user)
         {
             var jwtTokenHandler = new JwtSecurityTokenHandler();
