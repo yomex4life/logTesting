@@ -1,6 +1,7 @@
 using System.Text;
 using HealthChecks.UI.Client;
 using logTesting.Configs;
+using logTesting.Configs.Filters;
 using logTesting.Data;
 using logTesting.Repo;
 using logTesting.Services.Health;
@@ -22,7 +23,9 @@ var builder = WebApplication.CreateBuilder(args);
 // builder.Logging.ClearProviders();
 // builder.Logging.AddSerilog(logger);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options => {
+    options.Filters.Add(new MyFilter()); //Global filter
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

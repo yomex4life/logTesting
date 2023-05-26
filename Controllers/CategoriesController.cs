@@ -10,12 +10,14 @@ using logTesting.Repo;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using logTesting.Configs.Filters;
 
 namespace logTesting.Controllers
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ApiController]
     [Route("api/[controller]")]
+    [MyActionFilterAttribute("CategoriesController")]
     public class CategoriesController : ControllerBase
     {
         private readonly ICategoryRepo _categoryRepo;
@@ -30,6 +32,9 @@ namespace logTesting.Controllers
         }
 
         [HttpGet]
+        [MyActionFilterAttribute("GetAllCategories-Action")]
+        [MyAsyncActionFilterAttribute("GetAllCategories-AsyncAction")]
+        [MySecondAsyncActionFilterAttribute("GetAllCategories-SecondAsyncAction")]
         public async Task<ActionResult<IEnumerable<CategoryReadDto>>> GetAllCategories()
         {
             _logger.LogInformation("Getting all categories");
